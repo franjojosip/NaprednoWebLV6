@@ -1,0 +1,60 @@
+extends ../layout
+
+block content
+    h1.
+        #{title}
+    form#formProject(name="addproject" method="post" action="/projects/create")
+        a(href="/projects"): button(type="button" style="float:right;margin-bottom:20px" class="btn btn-primary") Back
+        br
+        input(type="hidden" name="members[]" id="members")
+        p Naziv projekta: 
+            input#inputName(type="text" placeholder="Naziv" name="project_name" required)
+        p Opis:
+            input#inputDescription(type="text" placeholder="Opis" name="project_description" required)
+        p Obavljeni poslovi: 
+            input#inputJobs(type="text" placeholder="Obavljeni poslovi" name="jobs_done" required)
+        p Cijena: 
+            input#inputPrice(type="number" placeholder="npr. 123" name="project_price" required)
+        p Datum početka: 
+            input#textStartDate(type="date" name="start_date" required)
+        p Datum završetka: 
+            input#textEndDate(type="date" name="end_date" required)
+        p Članovi: 
+            input(type="text" id="inputMember" placeholder="Novi član" style="display:inline-block")
+            input(type="button" value="Add to list" id="add" class="btn btn-primary" style="margin-left:20px")
+            ul(id="list" class="list-group")
+        p
+            input#btnSubmit(type="submit" value="Submit")
+
+
+
+    script.
+        $(document).ready(function(){
+            $("#add").click(function() {
+                var text = $("#inputMember").val();
+                if(text.length > 0){
+                    $("#list").append('<li class="list-group-item" style="margin: auto; text-align: center;" value="'+ text +'">'+text+'<input type="button" class="delete btn btn-danger" style="float:right" value="X"/></li>');
+                }
+                else{
+                    alert("Minimum length: 3 characters");
+                }
+            });
+
+            $(document).on('click', '.delete', function() {
+                if (confirm("Are you sure?")) {
+                    $(this).parent().remove();
+                }
+                return false;
+            });
+
+            $(document).on('click', '#btnSubmit', function() {
+                var members = [];
+                $('#list li').each(function (i) {
+                    members.push($(this).attr('value'));
+                });
+                //Save members in hidden input for form submit
+                $('#members').val(JSON.stringify(members));
+
+                $('#formProject .submit').click();
+            });
+        });
